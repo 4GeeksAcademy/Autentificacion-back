@@ -14,9 +14,34 @@ const getState = ({ getStore, getActions, setStore }) => {
 					background: "white",
 					initial: "white"
 				}
-			]
+				
+			],
+
+			token: null,
+			user: null
+
+
 		},
 		actions: {
+
+			register: async(email, password) => {
+				try {
+					const response = await fetch ("https://solid-robot-5g4w6979j5672p7wg-3001.app.github.dev/api/signup",{
+						method: "POST",
+						headers: {"Content-Type": "application/json"},
+						body: JSON.stringify({email, password})
+
+
+					})
+				} catch (error) {
+					console.log("Error de registro",error);
+
+					
+					
+				}
+
+			},
+
 			// Use getActions to call a function within a fuction
 			login: async (email, password) => {
 
@@ -37,11 +62,15 @@ const getState = ({ getStore, getActions, setStore }) => {
 				};
 
 				try {
-					const response = await fetch("https://potential-spork-7pvx7qxxxj9c64x-3001.app.github.dev/api/login", requestOptions);
+					const response = await fetch("https://solid-robot-5g4w6979j5672p7wg-3001.app.github.dev/api/login", requestOptions);
 					const result = await response.json();
 
 					if (response.status === 200) {
-						localStorage.setItem("token", result.access_token)
+						localStorage.setItem("token", result.access_token),
+						setStore ({user : email, token:result.access_token});
+						const store = getStore();
+						console.log({user: store.user, token:store.token});
+						 
 						return true
 					}
 				} catch (error) {
@@ -52,7 +81,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 			getProfile: async () => {
 				let token = localStorage.getItem("token")
 				try {
-					const response = await fetch("https://potential-spork-7pvx7qxxxj9c64x-3001.app.github.dev/api/profile", {
+					const response = await fetch("https://solid-robot-5g4w6979j5672p7wg-3001.app.github.dev/api/protected", {
 						method: "GET",
 						headers: {
 							"Authorization": `Bearer ${token}`
@@ -74,7 +103,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 			getMessage: async () => {
 				try {
 					// fetching data from the backend
-					const resp = await fetch(process.env.BACKEND_URL + "/api/hello")
+					const resp = await fetch(process.env.BACKEND_URL + "api/hello")
 					const data = await resp.json()
 					setStore({ message: data.message })
 					// don't forget to return something, that is how the async resolves

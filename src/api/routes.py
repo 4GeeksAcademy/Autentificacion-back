@@ -50,3 +50,22 @@ def get_profile():
     current_user = get_jwt_identity()
     print(current_user)
     return jsonify(logged_in_as=current_user), 200
+
+@api.route("/signup", methods=["POST"])
+def signup():
+    body = request.get_json()
+    
+
+    # Verificar si el usuario ya existe
+    # user = db.session.execute(db.select(user).filter_by(email=email)).scalar_one()
+
+    # if user:
+    #     return jsonify({"msg": "El usuario ya existe"}), 400
+
+
+    # Crear nuevo usuario
+    new_user = User(email=body['email'], password=body['password'])
+    db.session.add(new_user)
+    db.session.commit()
+
+    return jsonify({"msg": "Usuario creado exitosamente"}), 201
